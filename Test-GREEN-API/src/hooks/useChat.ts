@@ -117,7 +117,7 @@ export function useChat(creds: Credentials) {
       isActive = false;
       controller.abort();
     };
-  }, [creds.idInstance, creds.apiTokenInstance, creds]);
+  }, [creds]);
 
   // === ИСТОРИЯ ===
   const loadHistory = useCallback(
@@ -184,16 +184,16 @@ export function useChat(creds: Credentials) {
         }
 
         const check = await greenApi.checkAccount(
-          creds,
-          normalizedPhone,
-        );
+  creds,
+  normalizedPhone,
+);
 
-        if (!check.exist) {
-          setCreateChatError(
-            'Аккаунт с таким номером не найден в MAX.',
-          );
-          return false;
-        }
+if (!check.exist) {
+  setCreateChatError(
+    'Аккаунт с таким номером не найден в MAX.',
+  );
+  return false;
+}
 
         const newChatId = check.chatId || `${normalizedPhone}@c.us`;
 
@@ -260,6 +260,18 @@ export function useChat(creds: Credentials) {
             [activeChatId]: [...chatMsgs, myMsg],
           };
         });
+        setChats((prev) =>
+  prev.map((c) =>
+    c.id === activeChatId
+      ? {
+          ...c,
+          lastMessageText: text,
+          lastMessageTime: Date.now(),
+          lastMessageSenderName: undefined,
+        }
+      : c,
+  ),
+);
       } catch {
         setError('Не удалось отправить сообщение.');
       } finally {

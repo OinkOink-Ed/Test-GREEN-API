@@ -20,23 +20,33 @@ export const greenApi = {
   },
 
   async checkAccount(
-    creds: Credentials,
-    phoneNumber: string,
-  ): Promise<CheckAccountResponse> {
-    const response = await fetch(
-      `${API_URL}/waInstance${creds.idInstance}/checkAccount/${creds.apiTokenInstance}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          phoneNumber,
-          force: true,
-        }),
-      },
-    );
-    if (!response.ok) return { exist: false };
-    return response.json();
-  },
+  creds: Credentials,
+  phoneNumber: string,
+): Promise<CheckAccountResponse> {
+  const response = await fetch(
+    `${API_URL}/waInstance${creds.idInstance}/checkAccount/${creds.apiTokenInstance}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        phoneNumber,
+        force: true,
+      }),
+    },
+  );
+
+  // 404 — GREEN-API явно говорит, что аккаунта нет
+  if (response.status === 404) return { exist: false };
+
+  // Всё остальное (401, 403, 500, сеть) — это НЕ «аккаунта нет»,
+  // а реальная ошибка. Пробрасываем наверх, чтобы UI показал
+  // корректное сообщение.
+  if (!response.ok) {
+    throw new Error(`checkAccount failed: ${response.status}`);
+  }
+
+  return response.json();
+},
 
   async sendMessage(
     creds: Credentials,
@@ -114,24 +124,5 @@ export const greenApi = {
     );
     if (!response.ok) return null;
     return response.json();
-  },
-
-  // Метод оставлен на будущее, но в логике чата больше не используется
-  // (на бесплатном тарифе квота 100 вызовов/мес — упирались в QUOTE_EXCEEDED).
-  async getAvatar(
-    creds: Credentials,
-    chatId: string,
-  ): Promise<string | null> {
-    const response = await fetch(
-      `${API_URL}/waInstance${creds.idInstance}/getAvatar/${creds.apiTokenInstance}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ chatId }),
-      },
-    );
-    if (!response.ok) return null;
-    const data = await response.json();
-    return data.urlAvatar || null;
   },
 };

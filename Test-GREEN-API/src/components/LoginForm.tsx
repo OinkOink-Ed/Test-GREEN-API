@@ -99,7 +99,7 @@ export function LoginForm({ onLogin }: LoginFormProps) {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition-colors disabled:opacity-50"
+          className="w-full bg-[#8b5cf6] hover:bg-[#7c3aed] text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-[#8b5cf6]/50 transition-colors disabled:opacity-50"
         >
           {isLoading ? 'Проверка...' : 'Войти'}
         </button>
