@@ -24,7 +24,8 @@
 Пакетный менеджер — pnpm (в репо лежит `pnpm-lock.yaml`).
 
 ```bash
-git clone <ссылка на ваш репозиторий>
+git clone https://github.com/OinkOink-Ed/Test-GREEN-API.git
 cd <папка проекта>
 pnpm install
-pnpm dev
+pnpm run build
+pnpm preview
